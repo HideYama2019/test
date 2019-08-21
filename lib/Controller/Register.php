@@ -3,7 +3,9 @@ namespace MyApp\Controller;
 
 class Register extends \MyApp\Controller{
     public function run(){
+        //ログイン状態か否か検証、isLoggedInはController内で定義
         if($this->isLoggedIn()){
+            //ログインしている場合TOPページへリダイレクト
             header("Location:http://".$_SERVER['HTTP_HOST']);
             exit;
         }
@@ -12,10 +14,11 @@ class Register extends \MyApp\Controller{
         }
     }
     protected function postProcess(){
-        //妥当か検証
+        //送られてきたformが妥当か検証
         try{
             $this->_validate();
         }catch(\MyApp\Exception\InvalidUserName $e){
+            //setError、setValue、hasErrorはController.php内で定義
             $this->setError('username',$e->getMessage());
         }catch(\MyApp\Exception\InvalidPassword $e){
             $this->setError('password',$e->getMessage());
@@ -26,8 +29,9 @@ class Register extends \MyApp\Controller{
         if($this->hasError()){
             return;
         }else{
-            //ユーザーを作成
+            //エラーがなければユーザーを作成
             try{
+                //データベース処理はModel内で行うためそちらを呼び出す
                 $userModel=new \MyApp\Model\User();
                 $userModel->create([
                     'username'=>$_POST['username'],
@@ -37,7 +41,7 @@ class Register extends \MyApp\Controller{
                 $this->setError('username',$e->getMessage());
                 return;
             }
-            //ログイン画面にリダイレクト
+            //ユーザー生成が完了した場合ログイン画面にリダイレクト
             header("Location:http://".$_SERVER['HTTP_HOST']."/login.php");
             exit;
         }
@@ -46,6 +50,7 @@ class Register extends \MyApp\Controller{
         if(!isset($_POST['token']) || $_SESSION['token']!==$_POST['token']){
             echo "Invalid Token!";
         }
+        //送られてきたデータが半角英数字のみか検証
         if(!preg_match("/\A[a-zA-Z0-9]+\z/",$_POST['username'])){
             throw new \MyApp\Exception\InvalidUserName();
         }elseif(!preg_match("/\A[a-zA-Z0-9]+\z/",$_POST['password'])){

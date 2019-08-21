@@ -1,6 +1,10 @@
 <?php
+//config.phpが読み込まれる
 require_once(__DIR__."/../config/config.php");
+//名前空間\MyApp\ControllerのIndexクラスをインスタンス化
+//またController.php内の__construct()で$_SESSION['token']を定義し32文字のランダムな文字列を格納
 $app=new MyApp\Controller\Index();
+//名前空間\MyApp\ControllerのIndexクラス内で定義したrun()を呼び出し->lib/Controller/Index.phpへ
 $app->run();
 $comment=new MyApp\Controller\Comment();
 //var_dump($app->getValue()->users);
@@ -39,6 +43,7 @@ $comment=new MyApp\Controller\Comment();
             </div>    
             <div class="container-main">
                 <h2>掲示板</h2>
+                
                 <form action="post_comment.php" method="post">
                     <input type="hidden" name='token' value="<?=h($_SESSION['token'])?>">
                     <p><textarea name="comment"></textarea></p>
@@ -57,6 +62,7 @@ $comment=new MyApp\Controller\Comment();
                                 </form>
                                 <?php endif;?>
                             </p>
+                            <p><?=h($cmt->comment);?></p>
                         </div>                    
                     <?php endforeach;?>
                 </div>
